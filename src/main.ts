@@ -76,7 +76,47 @@ export default class CleanFilesPlugin extends Plugin {
      * 加载设置
      */
     async loadSettings() {
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        const loadedData = await this.loadData();
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData);
+        
+        // 迁移旧配置格式
+        this.settings = this.migrateOldSettings(this.settings);
+    }
+
+    /**
+     * 迁移旧配置格式到新的正则表达式格式
+     */
+    private migrateOldSettings(settings: any): CleanFilesSettings {
+        let needsSave = false;
+
+        // 迁移可清理扩展名配置
+        if (settings.cleanableExtensions && Array.isArray(settings.cleanableExtensions)) {
+            const extensions = settings.cleanableExtensions.map((ext: string) => 
+                ext.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            );
+            settings.cleanablePattern = extensions.length > 0 ? 
+                `\\.(${extensions.join('|').replace(/\\\.\\\*/g, '.*')})$` : '.*';
+            delete settings.cleanableExtensions;
+            needsSave = true;
+        }
+
+        // 迁移保护扩展名配置
+        if (settings.protectedExtensions && Array.isArray(settings.protectedExtensions)) {
+            const extensions = settings.protectedExtensions.map((ext: string) => 
+                ext.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            );
+            settings.protectedPattern = extensions.length > 0 ? 
+                `\\.(${extensions.join('|').replace(/\\\.\\\*/g, '.*')})$` : '';
+            delete settings.protectedExtensions;
+            needsSave = true;
+        }
+
+        // 如果有迁移，异步保存设置
+        if (needsSave) {
+            setTimeout(() => this.saveSettings(), 0);
+        }
+
+        return settings;
     }
 
     /**

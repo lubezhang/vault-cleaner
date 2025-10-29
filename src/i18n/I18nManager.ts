@@ -36,10 +36,10 @@ interface LanguageResource {
         title: string;
         language: string;
         language_desc: string;
-        cleanable_extensions: string;
-        cleanable_extensions_desc: string;
-        protected_extensions: string;
-        protected_extensions_desc: string;
+        cleanable_pattern: string;
+        cleanable_pattern_desc: string;
+        protected_pattern: string;
+        protected_pattern_desc: string;
         max_scan_depth: string;
         max_scan_depth_desc: string;
         exclude_hidden: string;
@@ -48,8 +48,14 @@ interface LanguageResource {
         min_file_size_desc: string;
         reset_settings: string;
         reset_settings_desc: string;
-        add_extension: string;
-        extension_placeholder: string;
+        pattern_placeholder: string;
+        pattern_examples: string;
+        pattern_all_files: string;
+        pattern_temp_files: string;
+        pattern_image_files: string;
+        pattern_hidden_files: string;
+        pattern_invalid: string;
+        pattern_test: string;
     };
     messages: {
         scan_started: string;
@@ -183,10 +189,10 @@ export class I18nManager {
                 title: "Clean Files 设置",
                 language: "界面语言",
                 language_desc: "选择插件界面显示语言",
-                cleanable_extensions: "需要清理的文件扩展名",
-                cleanable_extensions_desc: "这些扩展名的文件将被识别为可清理文件",
-                protected_extensions: "保护的文件扩展名",
-                protected_extensions_desc: "这些扩展名的文件将被保护，不会被清理",
+                cleanable_pattern: "可清理文件匹配模式",
+                cleanable_pattern_desc: "使用正则表达式匹配需要清理的文件（例如：\\.(tmp|temp|bak)$ 匹配临时文件）",
+                protected_pattern: "保护文件匹配模式",
+                protected_pattern_desc: "使用正则表达式匹配需要保护的文件（例如：\\.(md|canvas|base)$ 匹配笔记文件）",
                 max_scan_depth: "最大扫描深度",
                 max_scan_depth_desc: "设置扫描文件夹的最大深度（0表示无限制）",
                 exclude_hidden: "排除隐藏文件",
@@ -195,8 +201,14 @@ export class I18nManager {
                 min_file_size_desc: "只扫描大于此大小的文件（0表示扫描所有文件）",
                 reset_settings: "重置设置",
                 reset_settings_desc: "将所有设置重置为默认值",
-                add_extension: "添加",
-                extension_placeholder: "输入新的扩展名（如：.txt）"
+                pattern_placeholder: "输入正则表达式（如：\\.(tmp|temp|bak)$）",
+                pattern_examples: "常用模式示例",
+                pattern_all_files: "所有文件：.*",
+                pattern_temp_files: "临时文件：\\.(tmp|temp|bak)$|~$",
+                pattern_image_files: "图片文件：\\.(jpg|jpeg|png|gif|bmp)$",
+                pattern_hidden_files: "隐藏文件：^\\.",
+                pattern_invalid: "无效的正则表达式",
+                pattern_test: "测试模式"
             },
             messages: {
                 scan_started: "开始扫描文件...",
@@ -252,10 +264,10 @@ export class I18nManager {
                 title: "Clean Files Settings",
                 language: "Interface Language",
                 language_desc: "Select the display language for the plugin interface",
-                cleanable_extensions: "Cleanable File Extensions",
-                cleanable_extensions_desc: "Files with these extensions will be identified as cleanable",
-                protected_extensions: "Protected File Extensions",
-                protected_extensions_desc: "Files with these extensions will be protected from cleaning",
+                cleanable_pattern: "Cleanable File Pattern",
+                cleanable_pattern_desc: "Use regular expressions to match files that need cleaning (e.g.: \\.(tmp|temp|bak)$ for temporary files)",
+                protected_pattern: "Protected File Pattern",
+                protected_pattern_desc: "Use regular expressions to match files that need protection (e.g.: \\.(md|canvas|base)$ for note files)",
                 max_scan_depth: "Maximum Scan Depth",
                 max_scan_depth_desc: "Set the maximum depth for scanning folders (0 means unlimited)",
                 exclude_hidden: "Exclude Hidden Files",
@@ -264,8 +276,14 @@ export class I18nManager {
                 min_file_size_desc: "Only scan files larger than this size (0 means scan all files)",
                 reset_settings: "Reset Settings",
                 reset_settings_desc: "Reset all settings to default values",
-                add_extension: "Add",
-                extension_placeholder: "Enter new extension (e.g.: .txt)"
+                pattern_placeholder: "Enter regular expression (e.g.: \\.(tmp|temp|bak)$)",
+                pattern_examples: "Common Pattern Examples",
+                pattern_all_files: "All files: .*",
+                pattern_temp_files: "Temporary files: \\.(tmp|temp|bak)$|~$",
+                pattern_image_files: "Image files: \\.(jpg|jpeg|png|gif|bmp)$",
+                pattern_hidden_files: "Hidden files: ^\\.",
+                pattern_invalid: "Invalid regular expression",
+                pattern_test: "Test Pattern"
             },
             messages: {
                 scan_started: "Starting file scan...",

@@ -43,9 +43,6 @@ export class CleanFilesModal extends Modal {
     private createMainInterface() {
         const { contentEl } = this;
 
-        // 设置信息区域
-        // this.createSettingsInfo();
-
         // 结果显示区域
         const resultSection = contentEl.createDiv('clean-files-result-section');
 
@@ -318,55 +315,7 @@ export class CleanFilesModal extends Modal {
     /**
      * 刷新界面
      */
-    /**
-     * 创建设置信息区域
-     */
-    private createSettingsInfo() {
-        const { contentEl } = this;
 
-        const settingsSection = contentEl.createDiv('clean-files-settings-info');
-        settingsSection.createEl('h3', { text: this.i18nManager.t('ui.current_config') });
-
-        const infoContainer = settingsSection.createDiv('settings-info-container');
-
-        // 获取扫描器的设置
-        const settings = (this.scanner as any).settings;
-
-        // 显示可清理的扩展名
-        const cleanableDiv = infoContainer.createDiv('setting-info-item');
-        cleanableDiv.createEl('span', { text: this.i18nManager.t('settings.cleanable_extensions') + ': ', cls: 'setting-label' });
-        cleanableDiv.createEl('span', {
-            text: settings.cleanableExtensions.join(', ') || this.i18nManager.t('common.none'),
-            cls: 'setting-value'
-        });
-
-        // 显示保护的扩展名
-        const protectedDiv = infoContainer.createDiv('setting-info-item');
-        protectedDiv.createEl('span', { text: this.i18nManager.t('settings.protected_extensions') + ': ', cls: 'setting-label' });
-        protectedDiv.createEl('span', {
-            text: settings.protectedExtensions.join(', ') || this.i18nManager.t('common.none'),
-            cls: 'setting-value'
-        });
-
-        // 显示扫描深度
-        const depthDiv = infoContainer.createDiv('setting-info-item');
-        depthDiv.createEl('span', { text: this.i18nManager.t('settings.max_scan_depth') + ': ', cls: 'setting-label' });
-        depthDiv.createEl('span', {
-            text: settings.maxScanDepth.toString(),
-            cls: 'setting-value'
-        });
-
-        // 显示其他设置
-        const otherDiv = infoContainer.createDiv('setting-info-item');
-        otherDiv.createEl('span', { text: this.i18nManager.t('ui.other_settings') + ': ', cls: 'setting-label' });
-        const otherSettings = [];
-        if (settings.excludeHidden) otherSettings.push(this.i18nManager.t('settings.exclude_hidden'));
-        if (settings.minFileSize > 0) otherSettings.push(this.i18nManager.t('ui.min_file_size_display', { size: settings.minFileSize.toString() }));
-        otherDiv.createEl('span', {
-            text: otherSettings.join(', ') || this.i18nManager.t('ui.no_special_settings'),
-            cls: 'setting-value'
-        });
-    }
 
     private refresh() {
         const { contentEl } = this;

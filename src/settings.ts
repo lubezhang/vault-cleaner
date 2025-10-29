@@ -14,7 +14,7 @@ export class CleanFilesSettingTab extends PluginSettingTab {
         super(app, plugin);
         this.plugin = plugin;
         this.i18nManager = i18nManager;
-        
+
         // 监听语言变更，重新渲染界面
         this.i18nManager.onLanguageChange(() => {
             this.display();
@@ -43,18 +43,18 @@ export class CleanFilesSettingTab extends PluginSettingTab {
                 });
             });
 
-        // 需要清理的文件扩展名设置
-        this.createExtensionListSetting(
-            this.i18nManager.t('settings.cleanable_extensions'),
-            this.i18nManager.t('settings.cleanable_extensions_desc'),
-            'cleanableExtensions'
+        // 可清理文件匹配模式设置
+        this.createPatternSetting(
+            this.i18nManager.t('settings.cleanable_pattern'),
+            this.i18nManager.t('settings.cleanable_pattern_desc'),
+            'cleanablePattern'
         );
 
-        // 保护的文件扩展名设置
-        this.createExtensionListSetting(
-            this.i18nManager.t('settings.protected_extensions'),
-            this.i18nManager.t('settings.protected_extensions_desc'),
-            'protectedExtensions'
+        // 保护文件匹配模式设置
+        this.createPatternSetting(
+            this.i18nManager.t('settings.protected_pattern'),
+            this.i18nManager.t('settings.protected_pattern_desc'),
+            'protectedPattern'
         );
 
         // 扫描深度设置
@@ -108,120 +108,137 @@ export class CleanFilesSettingTab extends PluginSettingTab {
     }
 
     /**
-     * 创建扩展名列表设置
+     * 创建正则表达式模式设置
      */
-    private createExtensionListSetting(
+    private createPatternSetting(
         name: string,
         desc: string,
         settingKey: keyof CleanFilesSettings
     ): void {
         const { containerEl } = this;
-        
+
         // 创建设置容器
         const setting = new Setting(containerEl)
             .setName(name)
             .setDesc(desc);
 
-        const extensionContainer = containerEl.createDiv('extension-list-container');
-        extensionContainer.style.marginTop = '10px';
-        extensionContainer.style.marginBottom = '20px';
+        const patternContainer = containerEl.createDiv('pattern-container');
+        patternContainer.style.marginTop = '10px';
+        patternContainer.style.marginBottom = '20px';
 
-        // 显示当前扩展名列表
-        const updateExtensionList = () => {
-            extensionContainer.empty();
-            
-            const extensions = this.plugin.settings[settingKey] as string[];
-            
-            extensions.forEach((ext, index) => {
-                const itemDiv = extensionContainer.createDiv('extension-item');
-                itemDiv.style.display = 'flex';
-                itemDiv.style.alignItems = 'center';
-                itemDiv.style.marginBottom = '5px';
-                itemDiv.style.gap = '10px';
+        // 正则表达式输入框
+        const inputDiv = patternContainer.createDiv('pattern-input');
+        inputDiv.style.marginBottom = '10px';
 
-                const input = itemDiv.createEl('input', {
-                    type: 'text',
-                    value: ext
+        const patternInput = inputDiv.createEl('input', {
+            type: 'text',
+            placeholder: this.i18nManager.t('settings.pattern_placeholder'),
+            value: this.plugin.settings[settingKey] as string
+        });
+        patternInput.style.width = '100%';
+        patternInput.style.padding = '8px 12px';
+        patternInput.style.border = '1px solid var(--background-modifier-border)';
+        patternInput.style.borderRadius = '4px';
+        patternInput.style.backgroundColor = 'var(--background-primary)';
+        patternInput.style.color = 'var(--text-normal)';
+        patternInput.style.fontSize = '14px';
+
+        // 验证状态显示
+        const statusDiv = patternContainer.createDiv('pattern-status');
+        statusDiv.style.marginBottom = '10px';
+        statusDiv.style.fontSize = '12px';
+        statusDiv.style.minHeight = '16px';
+
+        // 仅为保护文件模式显示示例
+        if (settingKey === 'protectedPattern') {
+            // 常用模式示例
+            const examplesDiv = patternContainer.createDiv('pattern-examples');
+            examplesDiv.style.marginTop = '10px';
+
+            const examplesTitle = examplesDiv.createEl('div', {
+                text: this.i18nManager.t('settings.pattern_examples')
+            });
+            examplesTitle.style.fontWeight = 'bold';
+            examplesTitle.style.marginBottom = '5px';
+            examplesTitle.style.fontSize = '12px';
+            examplesTitle.style.color = 'var(--text-muted)';
+
+            const examples = [
+                { key: 'pattern_all_files', pattern: '.*' },
+                { key: 'pattern_temp_files', pattern: '\\.(tmp|temp|bak)$|~$' },
+                { key: 'pattern_image_files', pattern: '\\.(jpg|jpeg|png|gif|bmp)$' },
+                { key: 'pattern_hidden_files', pattern: '^\\.' },
+                { key: 'pattern_obsidian_core', pattern: '\\.(md|canvas)$' },
+                { key: 'pattern_obsidian_config', pattern: '\\.obsidian/.*\\.json$' },
+                { key: 'pattern_obsidian_plugins', pattern: '\\.obsidian/plugins/.*\\.(js|css)$' },
+                { key: 'pattern_obsidian_themes', pattern: '\\.obsidian/themes/.*\\.css$' },
+                { key: 'pattern_obsidian_cache', pattern: '\\.obsidian/.*\\.cache$' }
+            ];
+
+            examples.forEach(example => {
+                const exampleDiv = examplesDiv.createDiv('pattern-example');
+                exampleDiv.style.display = 'flex';
+                exampleDiv.style.alignItems = 'center';
+                exampleDiv.style.marginBottom = '3px';
+                exampleDiv.style.fontSize = '11px';
+                exampleDiv.style.color = 'var(--text-muted)';
+                exampleDiv.style.cursor = 'pointer';
+                exampleDiv.style.padding = '2px 4px';
+                exampleDiv.style.borderRadius = '3px';
+
+                exampleDiv.textContent = this.i18nManager.t(`settings.${example.key}`);
+
+                exampleDiv.addEventListener('mouseenter', () => {
+                    exampleDiv.style.backgroundColor = 'var(--background-modifier-hover)';
                 });
-                input.style.flex = '1';
-                input.style.padding = '4px 8px';
-                input.style.border = '1px solid var(--background-modifier-border)';
-                input.style.borderRadius = '4px';
-                input.style.backgroundColor = 'var(--background-primary)';
-                input.style.color = 'var(--text-normal)';
 
-                input.addEventListener('change', async () => {
-                    const newExtensions = [...extensions];
-                    newExtensions[index] = input.value.trim();
-                    (this.plugin.settings[settingKey] as string[]) = newExtensions;
-                    await this.plugin.saveSettings();
+                exampleDiv.addEventListener('mouseleave', () => {
+                    exampleDiv.style.backgroundColor = 'transparent';
                 });
 
-                const deleteButton = itemDiv.createEl('button', {
-                    text: this.i18nManager.t('common.delete')
-                });
-                deleteButton.style.padding = '4px 8px';
-                deleteButton.style.border = '1px solid var(--background-modifier-border)';
-                deleteButton.style.borderRadius = '4px';
-                deleteButton.style.backgroundColor = 'var(--interactive-accent)';
-                deleteButton.style.color = 'var(--text-on-accent)';
-                deleteButton.style.cursor = 'pointer';
-
-                deleteButton.addEventListener('click', async () => {
-                    const newExtensions = extensions.filter((_, i) => i !== index);
-                    (this.plugin.settings[settingKey] as string[]) = newExtensions;
-                    await this.plugin.saveSettings();
-                    updateExtensionList();
+                exampleDiv.addEventListener('click', () => {
+                    patternInput.value = example.pattern;
+                    validateAndSave();
                 });
             });
+        }
 
-            // 添加新扩展名的输入框和按钮
-            const addDiv = extensionContainer.createDiv('add-extension');
-            addDiv.style.display = 'flex';
-            addDiv.style.alignItems = 'center';
-            addDiv.style.gap = '10px';
-            addDiv.style.marginTop = '10px';
+        // 验证正则表达式并保存
+        const validateAndSave = async () => {
+            const pattern = patternInput.value.trim();
 
-            const newExtInput = addDiv.createEl('input', {
-                type: 'text',
-                placeholder: this.i18nManager.t('settings.extension_placeholder')
-            });
-            newExtInput.style.flex = '1';
-            newExtInput.style.padding = '4px 8px';
-            newExtInput.style.border = '1px solid var(--background-modifier-border)';
-            newExtInput.style.borderRadius = '4px';
-            newExtInput.style.backgroundColor = 'var(--background-primary)';
-            newExtInput.style.color = 'var(--text-normal)';
+            try {
+                // 验证正则表达式
+                new RegExp(pattern);
 
-            const addButton = addDiv.createEl('button', {
-                text: this.i18nManager.t('settings.add_extension')
-            });
-            addButton.style.padding = '4px 8px';
-            addButton.style.border = '1px solid var(--background-modifier-border)';
-            addButton.style.borderRadius = '4px';
-            addButton.style.backgroundColor = 'var(--interactive-accent)';
-            addButton.style.color = 'var(--text-on-accent)';
-            addButton.style.cursor = 'pointer';
+                // 保存设置
+                (this.plugin.settings[settingKey] as string) = pattern;
+                await this.plugin.saveSettings();
 
-            const addExtension = async () => {
-                const newExt = newExtInput.value.trim();
-                if (newExt && !extensions.includes(newExt)) {
-                    const newExtensions = [...extensions, newExt];
-                    (this.plugin.settings[settingKey] as string[]) = newExtensions;
-                    await this.plugin.saveSettings();
-                    newExtInput.value = '';
-                    updateExtensionList();
-                }
-            };
+                // 显示成功状态
+                statusDiv.textContent = '';
+                statusDiv.style.color = 'var(--text-success)';
+                patternInput.style.borderColor = 'var(--background-modifier-border)';
 
-            addButton.addEventListener('click', addExtension);
-            newExtInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    addExtension();
-                }
-            });
+            } catch (error) {
+                // 显示错误状态
+                statusDiv.textContent = this.i18nManager.t('settings.pattern_invalid');
+                statusDiv.style.color = 'var(--text-error)';
+                patternInput.style.borderColor = 'var(--text-error)';
+            }
         };
 
-        updateExtensionList();
+        // 输入事件监听
+        let debounceTimer: NodeJS.Timeout;
+        patternInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(validateAndSave, 500);
+        });
+
+        // 失去焦点时立即验证
+        patternInput.addEventListener('blur', validateAndSave);
+
+        // 初始验证
+        validateAndSave();
     }
 }
