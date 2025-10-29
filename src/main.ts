@@ -3,12 +3,14 @@ import { FileScanner } from './scanner';
 import { CleanFilesModal } from './ui';
 import { CleanFilesSettingTab } from './settings';
 import { CleanFilesSettings, DEFAULT_SETTINGS } from './types';
+import { I18nManager } from './i18n/I18nManager';
 
 /**
  * Clean Files 插件主类
  */
 export default class CleanFilesPlugin extends Plugin {
     private scanner: FileScanner;
+    private i18nManager: I18nManager;
     settings: CleanFilesSettings;
 
     async onload() {
@@ -17,31 +19,34 @@ export default class CleanFilesPlugin extends Plugin {
         // 加载设置
         await this.loadSettings();
 
+        // 初始化多语言管理器
+        this.i18nManager = new I18nManager(this.app, this.settings.language);
+
         // 初始化文件扫描器
         const vaultPath = (this.app.vault.adapter as any).basePath || '';
         this.scanner = new FileScanner(this.app, vaultPath, this.settings);
 
         // 添加设置页面
-        this.addSettingTab(new CleanFilesSettingTab(this.app, this));
+        this.addSettingTab(new CleanFilesSettingTab(this.app, this, this.i18nManager));
 
         // 添加命令
         this.addCommand({
             id: 'open-clean-files',
-            name: '打开清理文件界面',
+            name: this.i18nManager.t('ui.title'),
             callback: () => {
                 this.openCleanFilesModal();
             }
         });
 
         // 添加侧边栏图标
-        this.addRibbonIcon('trash-2', '清理文件', () => {
+        this.addRibbonIcon('trash-2', this.i18nManager.t('ui.title'), () => {
             this.openCleanFilesModal();
         });
 
         // 添加到命令面板
         this.addCommand({
             id: 'scan-clean-files',
-            name: '扫描需要清理的文件',
+            name: this.i18nManager.t('messages.scan_started'),
             callback: () => {
                 this.openCleanFilesModal();
             }
@@ -50,7 +55,7 @@ export default class CleanFilesPlugin extends Plugin {
         // 添加设置命令
         this.addCommand({
             id: 'open-clean-files-settings',
-            name: '打开清理文件设置',
+            name: this.i18nManager.t('settings.title'),
             callback: () => {
                 (this.app as any).setting.open();
                 (this.app as any).setting.openTabById(this.manifest.id);
@@ -60,6 +65,11 @@ export default class CleanFilesPlugin extends Plugin {
 
     onunload() {
         console.log('卸载 Clean Files 插件');
+        
+        // 清理多语言管理器
+        if (this.i18nManager) {
+            this.i18nManager.destroy();
+        }
     }
 
     /**
@@ -78,6 +88,10 @@ export default class CleanFilesPlugin extends Plugin {
         if (this.scanner) {
             this.scanner.updateSettings(this.settings);
         }
+        // 更新多语言管理器语言设置
+        if (this.i18nManager) {
+            this.i18nManager.setLanguage(this.settings.language);
+        }
     }
 
     /**
@@ -89,10 +103,17 @@ export default class CleanFilesPlugin extends Plugin {
     }
 
     /**
+     * 获取多语言管理器
+     */
+    getI18nManager(): I18nManager {
+        return this.i18nManager;
+    }
+
+    /**
      * 打开清理文件模态框
      */
     private openCleanFilesModal() {
-        const modal = new CleanFilesModal(this.app, this.scanner);
+        const modal = new CleanFilesModal(this.app, this.scanner, this.i18nManager);
         modal.open();
     }
 }

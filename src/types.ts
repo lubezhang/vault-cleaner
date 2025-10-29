@@ -30,6 +30,11 @@ export interface DeleteResult {
 }
 
 /**
+ * 支持的语言类型
+ */
+export type SupportedLanguage = 'zh-CN' | 'en-US';
+
+/**
  * 插件设置接口
  */
 export interface CleanFilesSettings {
@@ -38,6 +43,7 @@ export interface CleanFilesSettings {
     maxScanDepth: number;
     excludeHidden: boolean;
     minFileSize: number;
+    language: SupportedLanguage;
 }
 
 /**
@@ -52,7 +58,8 @@ export const DEFAULT_SETTINGS: CleanFilesSettings = {
     ],
     maxScanDepth: 10,
     excludeHidden: true,
-    minFileSize: 0
+    minFileSize: 0,
+    language: 'zh-CN'
 };
 
 

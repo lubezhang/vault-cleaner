@@ -11,6 +11,7 @@
         "importHelpers": true,
         "declaration": false,
         "outDir": "dist",
+        "resolveJsonModule": true,
         "typeRoots": [
             "node_modules/@types"
         ],

@@ -1,18 +1,21 @@
 import { Modal, App, Setting, Notice } from 'obsidian';
 import { ScanItem, ScanResult } from './types';
 import { FileScanner } from './scanner';
+import { I18nManager } from './i18n/I18nManager';
 
 /**
  * 清理文件主界面
  */
 export class CleanFilesModal extends Modal {
     private scanner: FileScanner;
+    private i18nManager: I18nManager;
     private scanResult: ScanResult | null = null;
     private isScanning = false;
 
-    constructor(app: App, scanner: FileScanner) {
+    constructor(app: App, scanner: FileScanner, i18nManager: I18nManager) {
         super(app);
         this.scanner = scanner;
+        this.i18nManager = i18nManager;
     }
 
     onOpen() {
@@ -20,7 +23,7 @@ export class CleanFilesModal extends Modal {
         contentEl.empty();
 
         // 设置标题
-        contentEl.createEl('h2', { text: 'Clean Files - 清理文件' });
+        contentEl.createEl('h2', { text: this.i18nManager.t('ui.title') });
 
         // 创建主界面
         this.createMainInterface();
@@ -48,14 +51,14 @@ export class CleanFilesModal extends Modal {
 
         if (this.isScanning) {
             resultSection.createEl('p', {
-                text: '正在扫描文件，请稍候...',
+                text: this.i18nManager.t('ui.scanning'),
                 cls: 'clean-files-scanning'
             });
         } else if (this.scanResult) {
             this.renderScanResults(resultSection);
         } else {
             resultSection.createEl('p', {
-                text: '准备开始扫描...',
+                text: this.i18nManager.t('ui.ready_to_scan'),
                 cls: 'clean-files-placeholder'
             });
         }
@@ -71,19 +74,19 @@ export class CleanFilesModal extends Modal {
         this.refresh();
 
         try {
-            new Notice('开始扫描文件...');
+            new Notice(this.i18nManager.t('messages.scan_started'));
             this.scanResult = await this.scanner.scanFiles();
 
             const totalCount = this.scanResult.totalCount;
             if (totalCount === 0) {
-                new Notice('未发现需要清理的文件');
+                new Notice(this.i18nManager.t('messages.no_items_found'));
             } else {
-                new Notice(`发现 ${totalCount} 个项目需要清理`);
+                new Notice(this.i18nManager.t('messages.items_found', { count: totalCount.toString() }));
             }
 
             this.refresh();
         } catch (error) {
-            new Notice(`扫描失败: ${error.message}`);
+            new Notice(this.i18nManager.t('messages.scan_failed', { error: error.message }));
             console.error('扫描错误:', error);
         } finally {
             this.isScanning = false;
@@ -99,7 +102,7 @@ export class CleanFilesModal extends Modal {
 
         if (!this.scanResult || this.scanResult.totalCount === 0) {
             container.createEl('p', {
-                text: '没有发现需要清理的文件',
+                text: this.i18nManager.t('ui.no_results'),
                 cls: 'clean-files-no-results'
             });
             return;
@@ -113,12 +116,12 @@ export class CleanFilesModal extends Modal {
 
         // 空目录列表
         if (this.scanResult.emptyDirectories.length > 0) {
-            this.renderItemList(container, '空目录', this.scanResult.emptyDirectories);
+            this.renderItemList(container, this.i18nManager.t('ui.empty_directories'), this.scanResult.emptyDirectories);
         }
 
         // 无关联文件列表
         if (this.scanResult.unlinkedFiles.length > 0) {
-            this.renderItemList(container, '无关联文件', this.scanResult.unlinkedFiles);
+            this.renderItemList(container, this.i18nManager.t('ui.unlinked_files'), this.scanResult.unlinkedFiles);
         }
 
         // 操作按钮
@@ -136,7 +139,7 @@ export class CleanFilesModal extends Modal {
         header.createEl('h3', { text: `${title} (${items.length})` });
 
         const selectAllBtn = header.createEl('button', {
-            text: '全选',
+            text: this.i18nManager.t('ui.select_all'),
             cls: 'clean-files-select-all'
         });
         selectAllBtn.onclick = () => this.toggleSelectAll(items);
@@ -180,14 +183,14 @@ export class CleanFilesModal extends Modal {
 
         // 删除按钮
         const deleteBtn = buttonSection.createEl('button', {
-            text: '删除选中项目',
+            text: this.i18nManager.t('ui.delete_selected'),
             cls: 'mod-warning clean-files-delete-btn'
         });
         deleteBtn.onclick = () => this.handleDelete();
 
         // 取消选择按钮
         const clearBtn = buttonSection.createEl('button', {
-            text: '取消选择',
+            text: this.i18nManager.t('ui.clear_selection'),
             cls: 'clean-files-clear-btn'
         });
         clearBtn.onclick = () => this.clearSelection();
@@ -229,7 +232,7 @@ export class CleanFilesModal extends Modal {
         ].filter(item => item.selected);
 
         if (selectedItems.length === 0) {
-            new Notice('请先选择要删除的项目');
+            new Notice(this.i18nManager.t('messages.select_items_first'));
             return;
         }
 
@@ -238,19 +241,19 @@ export class CleanFilesModal extends Modal {
         if (!confirmed) return;
 
         try {
-            new Notice('正在删除文件...');
+            new Notice(this.i18nManager.t('messages.deleting'));
             const result = await this.scanner.deleteItems(selectedItems);
 
             if (result.success) {
-                new Notice(`成功删除 ${selectedItems.length} 个项目`);
+                new Notice(this.i18nManager.t('messages.delete_success', { count: selectedItems.length.toString() }));
                 // 重新扫描
                 await this.handleScan();
             } else {
-                new Notice(`删除完成，但有 ${result.errors.length} 个错误`);
+                new Notice(this.i18nManager.t('messages.delete_partial', { errorCount: result.errors.length.toString() }));
                 result.errors.forEach(error => console.error(error));
             }
         } catch (error) {
-            new Notice(`删除失败: ${error.message}`);
+            new Notice(this.i18nManager.t('messages.delete_failed', { error: error.message }));
             console.error('删除错误:', error);
         }
     }
@@ -262,9 +265,9 @@ export class CleanFilesModal extends Modal {
         return new Promise((resolve) => {
             const modal = new Modal(this.app);
 
-            modal.contentEl.createEl('h3', { text: '确认删除' });
+            modal.contentEl.createEl('h3', { text: this.i18nManager.t('ui.confirm_delete') });
             modal.contentEl.createEl('p', {
-                text: `您确定要删除以下 ${items.length} 个项目吗？此操作不可撤销。`
+                text: this.i18nManager.t('ui.confirm_delete_message', { count: items.length.toString() })
             });
 
             const list = modal.contentEl.createEl('ul');
@@ -274,20 +277,20 @@ export class CleanFilesModal extends Modal {
 
             if (items.length > 10) {
                 modal.contentEl.createEl('p', {
-                    text: `...还有 ${items.length - 10} 个项目`
+                    text: this.i18nManager.t('ui.more_items', { count: (items.length - 10).toString() })
                 });
             }
 
             const buttonDiv = modal.contentEl.createDiv('modal-button-container');
 
-            const cancelBtn = buttonDiv.createEl('button', { text: '取消' });
+            const cancelBtn = buttonDiv.createEl('button', { text: this.i18nManager.t('common.cancel') });
             cancelBtn.onclick = () => {
                 modal.close();
                 resolve(false);
             };
 
             const confirmBtn = buttonDiv.createEl('button', {
-                text: '确认删除',
+                text: this.i18nManager.t('ui.confirm_delete_button'),
                 cls: 'mod-warning'
             });
             confirmBtn.onclick = () => {
@@ -322,7 +325,7 @@ export class CleanFilesModal extends Modal {
         const { contentEl } = this;
 
         const settingsSection = contentEl.createDiv('clean-files-settings-info');
-        settingsSection.createEl('h3', { text: '当前配置' });
+        settingsSection.createEl('h3', { text: this.i18nManager.t('ui.current_config') });
 
         const infoContainer = settingsSection.createDiv('settings-info-container');
 
@@ -331,23 +334,23 @@ export class CleanFilesModal extends Modal {
 
         // 显示可清理的扩展名
         const cleanableDiv = infoContainer.createDiv('setting-info-item');
-        cleanableDiv.createEl('span', { text: '可清理扩展名: ', cls: 'setting-label' });
+        cleanableDiv.createEl('span', { text: this.i18nManager.t('settings.cleanable_extensions') + ': ', cls: 'setting-label' });
         cleanableDiv.createEl('span', {
-            text: settings.cleanableExtensions.join(', ') || '无',
+            text: settings.cleanableExtensions.join(', ') || this.i18nManager.t('common.none'),
             cls: 'setting-value'
         });
 
         // 显示保护的扩展名
         const protectedDiv = infoContainer.createDiv('setting-info-item');
-        protectedDiv.createEl('span', { text: '保护扩展名: ', cls: 'setting-label' });
+        protectedDiv.createEl('span', { text: this.i18nManager.t('settings.protected_extensions') + ': ', cls: 'setting-label' });
         protectedDiv.createEl('span', {
-            text: settings.protectedExtensions.join(', ') || '无',
+            text: settings.protectedExtensions.join(', ') || this.i18nManager.t('common.none'),
             cls: 'setting-value'
         });
 
         // 显示扫描深度
         const depthDiv = infoContainer.createDiv('setting-info-item');
-        depthDiv.createEl('span', { text: '扫描深度: ', cls: 'setting-label' });
+        depthDiv.createEl('span', { text: this.i18nManager.t('settings.max_scan_depth') + ': ', cls: 'setting-label' });
         depthDiv.createEl('span', {
             text: settings.maxScanDepth.toString(),
             cls: 'setting-value'
@@ -355,12 +358,12 @@ export class CleanFilesModal extends Modal {
 
         // 显示其他设置
         const otherDiv = infoContainer.createDiv('setting-info-item');
-        otherDiv.createEl('span', { text: '其他设置: ', cls: 'setting-label' });
+        otherDiv.createEl('span', { text: this.i18nManager.t('ui.other_settings') + ': ', cls: 'setting-label' });
         const otherSettings = [];
-        if (settings.excludeHidden) otherSettings.push('排除隐藏文件');
-        if (settings.minFileSize > 0) otherSettings.push(`最小文件大小: ${settings.minFileSize}字节`);
+        if (settings.excludeHidden) otherSettings.push(this.i18nManager.t('settings.exclude_hidden'));
+        if (settings.minFileSize > 0) otherSettings.push(this.i18nManager.t('ui.min_file_size_display', { size: settings.minFileSize.toString() }));
         otherDiv.createEl('span', {
-            text: otherSettings.join(', ') || '无特殊设置',
+            text: otherSettings.join(', ') || this.i18nManager.t('ui.no_special_settings'),
             cls: 'setting-value'
         });
     }
@@ -370,7 +373,7 @@ export class CleanFilesModal extends Modal {
         contentEl.empty();
 
         // 设置标题
-        contentEl.createEl('h2', { text: 'Clean Files - 清理文件' });
+        contentEl.createEl('h2', { text: this.i18nManager.t('ui.title') });
 
         // 重新创建主界面，但不触发扫描
         this.createMainInterface();

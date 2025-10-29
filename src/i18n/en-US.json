@@ -1,0 +1,63 @@
+{
+    "common": {
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "select_all": "Select All",
+        "clear_selection": "Clear Selection",
+        "none": "None"
+    },
+    "ui": {
+        "title": "Clean Files",
+        "scanning": "Scanning files, please wait...",
+        "ready_to_scan": "Ready to start scanning...",
+        "no_results": "No files found that need cleaning",
+        "empty_directories": "Empty Directories",
+        "unlinked_files": "Unlinked Files",
+        "select_all": "Select All",
+        "delete_selected": "Delete Selected Items",
+        "clear_selection": "Clear Selection",
+        "confirm_delete": "Confirm Delete",
+        "confirm_delete_message": "Are you sure you want to delete the following {{count}} items? This action cannot be undone.",
+        "more_items": "...and {{count}} more items",
+        "confirm_delete_button": "Confirm Delete",
+        "current_config": "Current Configuration",
+        "other_settings": "Other Settings",
+        "min_file_size_display": "Minimum file size: {{size}} bytes",
+        "no_special_settings": "No special settings"
+    },
+    "settings": {
+        "title": "Clean Files Settings",
+        "language": "Interface Language",
+        "language_desc": "Select the display language for the plugin interface",
+        "cleanable_extensions": "Cleanable File Extensions",
+        "cleanable_extensions_desc": "Files with these extensions will be identified as cleanable",
+        "protected_extensions": "Protected File Extensions",
+        "protected_extensions_desc": "Files with these extensions will be protected from cleaning",
+        "max_scan_depth": "Maximum Scan Depth",
+        "max_scan_depth_desc": "Set the maximum depth for scanning folders (0 means unlimited)",
+        "exclude_hidden": "Exclude Hidden Files",
+        "exclude_hidden_desc": "Whether to exclude hidden files and folders during scanning",
+        "min_file_size": "Minimum File Size (bytes)",
+        "min_file_size_desc": "Only scan files larger than this size (0 means scan all files)",
+        "reset_settings": "Reset Settings",
+        "reset_settings_desc": "Reset all settings to default values",
+        "add_extension": "Add",
+        "extension_placeholder": "Enter new extension (e.g.: .txt)"
+    },
+    "messages": {
+        "scan_started": "Starting file scan...",
+        "scan_failed": "Scan failed: {{error}}",
+        "no_items_found": "No items found to clean",
+        "items_found": "Found {{count}} items to clean",
+        "select_items_first": "Please select items to delete first",
+        "deleting": "Deleting files...",
+        "delete_success": "Successfully deleted {{count}} items",
+        "delete_partial": "Deletion completed with {{errorCount}} errors",
+        "delete_failed": "Deletion failed: {{error}}"
+    },
+    "languages": {
+        "zh-CN": "中文",
+        "en-US": "English"
+    }
+}

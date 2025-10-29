@@ -1,42 +1,66 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import CleanFilesPlugin from './main';
-import { CleanFilesSettings } from './types';
+import { CleanFilesSettings, SupportedLanguage } from './types';
+import { I18nManager } from './i18n/I18nManager';
 
 /**
  * Clean Files 插件设置页面
  */
 export class CleanFilesSettingTab extends PluginSettingTab {
     plugin: CleanFilesPlugin;
+    private i18nManager: I18nManager;
 
-    constructor(app: App, plugin: CleanFilesPlugin) {
+    constructor(app: App, plugin: CleanFilesPlugin, i18nManager: I18nManager) {
         super(app, plugin);
         this.plugin = plugin;
+        this.i18nManager = i18nManager;
+        
+        // 监听语言变更，重新渲染界面
+        this.i18nManager.onLanguageChange(() => {
+            this.display();
+        });
     }
 
     display(): void {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'Clean Files 设置' });
+        containerEl.createEl('h2', { text: this.i18nManager.t('settings.title') });
+
+        // 语言选择设置
+        new Setting(containerEl)
+            .setName(this.i18nManager.t('settings.language'))
+            .setDesc(this.i18nManager.t('settings.language_desc'))
+            .addDropdown(dropdown => {
+                const languages = this.i18nManager.getSupportedLanguages();
+                languages.forEach(lang => {
+                    dropdown.addOption(lang.code, lang.name);
+                });
+                dropdown.setValue(this.plugin.settings.language);
+                dropdown.onChange(async (value: SupportedLanguage) => {
+                    this.plugin.settings.language = value;
+                    await this.plugin.saveSettings();
+                });
+            });
 
         // 需要清理的文件扩展名设置
         this.createExtensionListSetting(
-            '需要清理的文件扩展名',
-            '这些扩展名的文件将被识别为可清理文件',
+            this.i18nManager.t('settings.cleanable_extensions'),
+            this.i18nManager.t('settings.cleanable_extensions_desc'),
             'cleanableExtensions'
         );
 
         // 保护的文件扩展名设置
         this.createExtensionListSetting(
-            '保护的文件扩展名',
-            '这些扩展名的文件将被保护，不会被清理',
+            this.i18nManager.t('settings.protected_extensions'),
+            this.i18nManager.t('settings.protected_extensions_desc'),
             'protectedExtensions'
         );
 
         // 扫描深度设置
         new Setting(containerEl)
-            .setName('最大扫描深度')
-            .setDesc('设置扫描文件夹的最大深度（0表示无限制）')
+            .setName(this.i18nManager.t('settings.max_scan_depth'))
+            .setDesc(this.i18nManager.t('settings.max_scan_depth_desc'))
             .addSlider(slider => slider
                 .setLimits(0, 20, 1)
                 .setValue(this.plugin.settings.maxScanDepth)
@@ -48,8 +72,8 @@ export class CleanFilesSettingTab extends PluginSettingTab {
 
         // 排除隐藏文件设置
         new Setting(containerEl)
-            .setName('排除隐藏文件')
-            .setDesc('是否在扫描时排除隐藏文件和文件夹')
+            .setName(this.i18nManager.t('settings.exclude_hidden'))
+            .setDesc(this.i18nManager.t('settings.exclude_hidden_desc'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.excludeHidden)
                 .onChange(async (value) => {
@@ -59,8 +83,8 @@ export class CleanFilesSettingTab extends PluginSettingTab {
 
         // 最小文件大小设置
         new Setting(containerEl)
-            .setName('最小文件大小 (字节)')
-            .setDesc('只扫描大于此大小的文件（0表示扫描所有文件）')
+            .setName(this.i18nManager.t('settings.min_file_size'))
+            .setDesc(this.i18nManager.t('settings.min_file_size_desc'))
             .addText(text => text
                 .setPlaceholder('0')
                 .setValue(this.plugin.settings.minFileSize.toString())
@@ -72,10 +96,10 @@ export class CleanFilesSettingTab extends PluginSettingTab {
 
         // 重置设置按钮
         new Setting(containerEl)
-            .setName('重置设置')
-            .setDesc('将所有设置重置为默认值')
+            .setName(this.i18nManager.t('settings.reset_settings'))
+            .setDesc(this.i18nManager.t('settings.reset_settings_desc'))
             .addButton(button => button
-                .setButtonText('重置')
+                .setButtonText(this.i18nManager.t('settings.reset_settings'))
                 .setWarning()
                 .onClick(async () => {
                     await this.plugin.resetSettings();
@@ -134,7 +158,7 @@ export class CleanFilesSettingTab extends PluginSettingTab {
                 });
 
                 const deleteButton = itemDiv.createEl('button', {
-                    text: '删除'
+                    text: this.i18nManager.t('common.delete')
                 });
                 deleteButton.style.padding = '4px 8px';
                 deleteButton.style.border = '1px solid var(--background-modifier-border)';
@@ -160,7 +184,7 @@ export class CleanFilesSettingTab extends PluginSettingTab {
 
             const newExtInput = addDiv.createEl('input', {
                 type: 'text',
-                placeholder: '输入新的扩展名（如：.txt）'
+                placeholder: this.i18nManager.t('settings.extension_placeholder')
             });
             newExtInput.style.flex = '1';
             newExtInput.style.padding = '4px 8px';
@@ -170,7 +194,7 @@ export class CleanFilesSettingTab extends PluginSettingTab {
             newExtInput.style.color = 'var(--text-normal)';
 
             const addButton = addDiv.createEl('button', {
-                text: '添加'
+                text: this.i18nManager.t('settings.add_extension')
             });
             addButton.style.padding = '4px 8px';
             addButton.style.border = '1px solid var(--background-modifier-border)';

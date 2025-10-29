@@ -1,0 +1,63 @@
+{
+    "common": {
+        "confirm": "确认",
+        "cancel": "取消",
+        "delete": "删除",
+        "select_all": "全选",
+        "clear_selection": "取消选择",
+        "none": "无"
+    },
+    "ui": {
+        "title": "Clean Files - 清理文件",
+        "scanning": "正在扫描文件，请稍候...",
+        "ready_to_scan": "准备开始扫描...",
+        "no_results": "没有发现需要清理的文件",
+        "empty_directories": "空目录",
+        "unlinked_files": "无关联文件",
+        "select_all": "全选",
+        "delete_selected": "删除选中项目",
+        "clear_selection": "取消选择",
+        "confirm_delete": "确认删除",
+        "confirm_delete_message": "您确定要删除以下 {{count}} 个项目吗？此操作不可撤销。",
+        "more_items": "...还有 {{count}} 个项目",
+        "confirm_delete_button": "确认删除",
+        "current_config": "当前配置",
+        "other_settings": "其他设置",
+        "min_file_size_display": "最小文件大小: {{size}}字节",
+        "no_special_settings": "无特殊设置"
+    },
+    "settings": {
+        "title": "Clean Files 设置",
+        "language": "界面语言",
+        "language_desc": "选择插件界面显示语言",
+        "cleanable_extensions": "需要清理的文件扩展名",
+        "cleanable_extensions_desc": "这些扩展名的文件将被识别为可清理文件",
+        "protected_extensions": "保护的文件扩展名",
+        "protected_extensions_desc": "这些扩展名的文件将被保护，不会被清理",
+        "max_scan_depth": "最大扫描深度",
+        "max_scan_depth_desc": "设置扫描文件夹的最大深度（0表示无限制）",
+        "exclude_hidden": "排除隐藏文件",
+        "exclude_hidden_desc": "是否在扫描时排除隐藏文件和文件夹",
+        "min_file_size": "最小文件大小 (字节)",
+        "min_file_size_desc": "只扫描大于此大小的文件（0表示扫描所有文件）",
+        "reset_settings": "重置设置",
+        "reset_settings_desc": "将所有设置重置为默认值",
+        "add_extension": "添加",
+        "extension_placeholder": "输入新的扩展名（如：.txt）"
+    },
+    "messages": {
+        "scan_started": "开始扫描文件...",
+        "scan_failed": "扫描失败: {{error}}",
+        "no_items_found": "未发现需要清理的文件",
+        "items_found": "发现 {{count}} 个项目需要清理",
+        "select_items_first": "请先选择要删除的项目",
+        "deleting": "正在删除文件...",
+        "delete_success": "成功删除 {{count}} 个项目",
+        "delete_partial": "删除完成，但有 {{errorCount}} 个错误",
+        "delete_failed": "删除失败: {{error}}"
+    },
+    "languages": {
+        "zh-CN": "中文",
+        "en-US": "English"
+    }
+}
