@@ -172,6 +172,7 @@ export class FileScanner {
     /**
      * 检查是否为无关联文件
      * 通过用户配置和引用检测来判断文件是否可以清理
+     * 核心原则：有引用的文件绝对不能被清理
      */
     private async isUnlinkedFile(filePath: string, fileName: string, config: ScanConfig): Promise<boolean> {
         const ext = extname(fileName).toLowerCase();
@@ -186,21 +187,39 @@ export class FileScanner {
             return false;
         }
 
-        // 2. 优先检查保护扩展名列表 - 如果在保护列表中，直接跳过
-        if (this.settings.protectedExtensions.includes(ext)) {
+        // 2. 优先检查文件是否被Obsidian引用 - 如果被引用，直接返回false（不可清理）
+        // 这是最重要的检查，确保有引用的文件绝对不会被清理
+        const isReferenced = this.isReferencedByObsidian(filePath);
+        if (isReferenced) {
             return false;
         }
 
-        // 3. 检查可清理扩展名列表 - 如果在可清理列表中，直接标记为可清理
-        if (this.settings.cleanableExtensions.includes(ext) || this.settings.cleanableExtensions.includes(fileName)) {
-            return true;
+        // 3. 检查保护文件模式 - 如果匹配保护模式，不可清理
+        try {
+            if (this.settings.protectedPattern && this.settings.protectedPattern.trim()) {
+                const protectedRegex = new RegExp(this.settings.protectedPattern);
+                if (protectedRegex.test(fileName)) {
+                    return false;
+                }
+            }
+        } catch (error) {
+            console.warn(`保护文件正则表达式无效: ${this.settings.protectedPattern}`, error);
         }
 
-        // 4. 对于其他文件，检查是否被Obsidian引用
-        // 如果文件被引用，则不是无关联文件（返回false）
-        // 如果文件没有被引用，则是无关联文件（返回true，可以清理）
-        const isReferenced = this.isReferencedByObsidian(filePath);
-        return !isReferenced;
+        // 4. 检查可清理文件模式 - 如果匹配可清理模式且未被引用，可以清理
+        try {
+            if (this.settings.cleanablePattern && this.settings.cleanablePattern.trim()) {
+                const cleanableRegex = new RegExp(this.settings.cleanablePattern);
+                if (cleanableRegex.test(fileName)) {
+                    return true;
+                }
+            }
+        } catch (error) {
+            console.warn(`可清理文件正则表达式无效: ${this.settings.cleanablePattern}`, error);
+        }
+
+        // 5. 对于其他文件（不匹配任何模式），默认不清理
+        return false;
     }
 
     /**
