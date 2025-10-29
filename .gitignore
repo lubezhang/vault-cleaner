@@ -110,3 +110,6 @@ temp/
 *.swp
 *.swo
 *~
+
+# Trae AI 文档目录
+.trae/
