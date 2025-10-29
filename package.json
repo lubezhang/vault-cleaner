@@ -17,6 +17,14 @@
     ],
     "author": "Clean Files Plugin",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lubezhang/vault-cleaner.git"
+    },
+    "homepage": "https://github.com/lubezhang/vault-cleaner",
+    "bugs": {
+        "url": "https://github.com/lubezhang/vault-cleaner/issues"
+    },
     "devDependencies": {
         "@types/node": "^16.11.6",
         "@typescript-eslint/eslint-plugin": "5.29.0",
