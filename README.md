@@ -1,120 +1,176 @@
-# Clean Files - Obsidian清理插件
+# Vault Cleaner
 
-一个简洁的Obsidian清理插件，专注于识别和清理空目录和无关联文件。
+A concise Obsidian plugin focused on identifying and cleaning empty directories and unlinked files with smart pattern matching and multi-language support.
 
-## 功能特性
+## Features
 
-- 🔍 **智能扫描**：自动识别空目录和无关联文件
-- 🛡️ **安全保护**：自动排除Obsidian支持的文档格式（.md, .canvas, .pdf等）
-- ✅ **批量操作**：支持批量选择和删除
-- 🎯 **精准清理**：只清理真正无用的文件
-- 💡 **简洁界面**：遵循最小化设计原则
+- 🔍 **Smart Scanning**: Automatically identifies empty directories and unlinked files
+- 🎯 **Pattern Matching**: Regex-based file pattern matching with cleanable and protected patterns
+- 🛡️ **Safe Protection**: Automatically excludes referenced files and Obsidian-supported formats
+- 🌐 **Multi-language**: Full support for English and Chinese interfaces
+- ⚙️ **Configurable**: Customizable scan depth, file size limits, and exclusion rules
+- ✅ **Batch Operations**: Support for bulk selection and deletion
+- 💡 **Clean Interface**: Minimalist design following Obsidian's UI principles
 
-## 安装方法
+## Installation
 
-### 手动安装
+### Manual Installation
 
-1. 下载最新版本的插件文件
-2. 将文件解压到你的Obsidian插件目录：`{vault}/.obsidian/plugins/clean-files/`
-3. 在Obsidian设置中启用"Clean Files"插件
+1. Download the latest release from the releases page
+2. Extract the files to your Obsidian plugins directory: `{vault}/.obsidian/plugins/vault-cleaner/`
+3. Enable "Vault Cleaner" in Obsidian's Community Plugins settings
 
-### 开发安装
+### Development Installation
 
-1. 克隆此仓库到你的插件目录
-2. 运行 `pnpm install` 安装依赖
-3. 运行 `pnpm run build` 构建插件
-4. 在Obsidian中启用插件
+1. Clone this repository to your plugins directory
+2. Run `pnpm install` to install dependencies
+3. Run `pnpm run build` to build the plugin
+4. Enable the plugin in Obsidian
 
-## 使用方法
+## Usage
 
-1. **打开插件**：
-   - 点击侧边栏的垃圾桶图标
-   - 或使用命令面板搜索"清理文件"
+### Basic Usage
 
-2. **扫描文件**：
-   - 点击"开始扫描"按钮
-   - 等待扫描完成
+1. **Open the Plugin**:
+   - Click the trash can icon in the sidebar
+   - Or use Command Palette and search for "Clean Files"
 
-3. **选择删除**：
-   - 查看扫描结果
-   - 勾选要删除的项目
-   - 点击"删除选中项目"
-   - 确认删除操作
+2. **Scan Files**:
+   - Click "Start Scan" button
+   - Wait for the scanning process to complete
 
-## 扫描规则
+3. **Review and Delete**:
+   - Review the scan results
+   - Select items you want to delete
+   - Click "Delete Selected Items"
+   - Confirm the deletion operation
 
-### 会被清理的文件：
-- 空目录
-- 临时文件（.tmp, .log, .cache等）
-- 备份文件（.bak, .old等）
-- 系统文件（.DS_Store, Thumbs.db等）
-- 其他非Obsidian支持的文件格式
+### Configuration
 
-### 不会被清理的文件：
-- Markdown文件（.md）
-- Canvas文件（.canvas）
-- 图片文件（.jpg, .png, .gif, .svg等）
-- 音频文件（.mp3, .wav等）
-- 视频文件（.mp4, .webm等）
-- PDF文件（.pdf）
-- 其他Obsidian支持的格式
+Access plugin settings through Obsidian's Settings → Community Plugins → Vault Cleaner.
 
-## 安全机制
+#### Pattern Settings
 
-- ✅ 删除前需要用户确认
-- ✅ 显示详细的删除列表
-- ✅ 自动排除重要文件格式
-- ✅ 错误处理和日志记录
+- **Cleanable File Patterns**: Regex patterns for files that can be cleaned (e.g., `\\.tmp$|\\.log$`)
+- **Protected File Patterns**: Regex patterns for files that should never be cleaned (e.g., `\\.md$|\\.canvas$`)
 
-## 开发
+#### Scan Settings
 
-### 环境要求
+- **Scan Depth**: Maximum directory depth to scan (default: 10)
+- **Minimum File Size**: Minimum file size in bytes to consider for cleaning (default: 0)
+- **Exclude Hidden Files**: Whether to exclude hidden files from scanning
+- **Include Empty Directories**: Whether to include empty directories in scan results
+
+#### Example Patterns
+
+The plugin includes built-in examples for common Obsidian file types:
+- Core files: `\\.md$|\\.canvas$`
+- Config files: `\\.obsidian/.*\\.json$`
+- Plugin files: `\\.obsidian/plugins/.*\\.(js|css)$`
+- Theme files: `\\.obsidian/themes/.*\\.css$`
+- Cache files: `\\.obsidian/.*\\.cache$`
+
+## Safety Features
+
+- ✅ **Reference Protection**: Files referenced by Obsidian are never marked for deletion
+- ✅ **Confirmation Required**: All deletions require user confirmation
+- ✅ **Detailed Preview**: Shows exactly what will be deleted before confirmation
+- ✅ **Pattern Protection**: Protected patterns override cleanable patterns
+- ✅ **Error Handling**: Comprehensive error handling and logging
+
+## Scanning Logic
+
+### Files That May Be Cleaned:
+- Empty directories
+- Files matching cleanable patterns (e.g., `.tmp`, `.log`, `.cache`)
+- Unreferenced files that don't match protected patterns
+- Files below minimum size threshold (if configured)
+
+### Files That Are Protected:
+- Files referenced by any Obsidian note or canvas
+- Files matching protected patterns
+- Files below minimum file size (if configured)
+- Hidden files (if exclusion is enabled)
+
+## Development
+
+### Requirements
 
 - Node.js 16+
-- pnpm
+- pnpm package manager
 
-### 开发命令
+### Development Commands
 
 ```bash
-# 安装依赖
+# Install dependencies
 pnpm install
 
-# 开发模式（监听文件变化）
+# Development mode (watch for changes)
 pnpm run dev
 
-# 构建生产版本
+# Build production version
 pnpm run build
 
-# 版本更新
+# Version bump
 pnpm version patch
 ```
 
-### 项目结构
+### Project Structure
 
 ```
-clean-files/
-├── main.ts          # 插件主文件
-├── scanner.ts       # 文件扫描服务
-├── ui.ts           # 用户界面组件
-├── types.ts        # 类型定义
-├── styles.css      # 样式文件
-├── manifest.json   # 插件清单
-├── package.json    # 项目配置
-└── README.md       # 说明文档
+vault-cleaner/
+├── src/
+│   ├── main.ts              # Plugin entry point
+│   ├── scanner.ts           # File scanning service
+│   ├── ui.ts               # User interface components
+│   ├── settings.ts         # Settings configuration
+│   ├── types.ts            # TypeScript type definitions
+│   └── i18n/               # Internationalization
+│       ├── I18nManager.ts  # Language manager
+│       ├── en-US.json      # English translations
+│       └── zh-CN.json      # Chinese translations
+├── styles.css              # Plugin styles
+├── manifest.json           # Plugin manifest
+├── package.json            # Project configuration
+├── tsconfig.json           # TypeScript configuration
+├── esbuild.config.mjs      # Build configuration
+└── README.md               # This file
 ```
 
-## 许可证
+### Key Components
+
+- **FileScanner**: Core scanning logic with pattern matching and reference detection
+- **UI Manager**: Interface components for scan results and user interactions
+- **Settings Manager**: Configuration interface with pattern examples
+- **I18n Manager**: Multi-language support system
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues and pull requests.
+
+### Development Guidelines
+
+- Follow TypeScript best practices
+- Maintain code formatting with 4-space indentation
+- Add appropriate comments for complex logic
+- Test thoroughly before submitting PRs
+- Use Chinese for git commit messages (project convention)
+
+## License
 
 MIT License
 
-## 贡献
+## Changelog
 
-欢迎提交Issue和Pull Request！
+### v0.1.0
+- Initial release
+- Basic scanning and deletion functionality
+- Regex pattern matching system
+- Multi-language support (English/Chinese)
+- Configurable settings interface
+- Safe deletion with confirmation
+- Reference protection system
 
-## 更新日志
+## Support
 
-### v1.0.0
-- 初始版本发布
-- 基本的扫描和删除功能
-- 简洁的用户界面
-- 安全的删除确认机制
+If you encounter any issues or have feature requests, please create an issue on the GitHub repository.

@@ -1,7 +1,7 @@
 {
-    "name": "obsidian-clean-files",
-    "version": "1.0.0",
-    "description": "一个简洁的Obsidian清理插件，专注于识别和清理空目录和无关联文件",
+    "name": "vault-cleaner",
+    "version": "0.1.0",
+    "description": "A concise Obsidian cleanup plugin focused on identifying and removing empty directories and unlinked files.",
     "main": "dist/main.js",
     "scripts": {
         "dev": "node esbuild.config.mjs",
