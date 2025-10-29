@@ -1,7 +1,7 @@
 {
     "name": "vault-cleaner",
     "version": "0.1.0",
-    "description": "A concise Obsidian cleanup plugin focused on identifying and removing empty directories and unlinked files.",
+    "description": "A content cleanup plugin focused on identifying and removing empty directories and unlinked files.",
     "main": "dist/main.js",
     "scripts": {
         "dev": "node esbuild.config.mjs",

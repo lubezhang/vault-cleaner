@@ -1,16 +1,14 @@
 # Vault Cleaner
 
-A concise Obsidian plugin focused on identifying and cleaning empty directories and unlinked files with smart pattern matching and multi-language support.
+A content cleanup plugin focused on identifying and cleaning empty directories and unlinked files with smart pattern matching and multi-language support.
 
 ## Features
 
 - 🔍 **Smart Scanning**: Automatically identifies empty directories and unlinked files
 - 🎯 **Pattern Matching**: Regex-based file pattern matching with cleanable and protected patterns
-- 🛡️ **Safe Protection**: Automatically excludes referenced files and Obsidian-supported formats
 - 🌐 **Multi-language**: Full support for English and Chinese interfaces
 - ⚙️ **Configurable**: Customizable scan depth, file size limits, and exclusion rules
 - ✅ **Batch Operations**: Support for bulk selection and deletion
-- 💡 **Clean Interface**: Minimalist design following Obsidian's UI principles
 
 ## Installation
 
@@ -18,7 +16,6 @@ A concise Obsidian plugin focused on identifying and cleaning empty directories 
 
 1. Download the latest release from the releases page
 2. Extract the files to your Obsidian plugins directory: `{vault}/.obsidian/plugins/vault-cleaner/`
-3. Enable "Vault Cleaner" in Obsidian's Community Plugins settings
 
 ### Development Installation
 
