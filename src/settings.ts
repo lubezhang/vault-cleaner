@@ -122,46 +122,37 @@ export class CleanFilesSettingTab extends PluginSettingTab {
             .setName(name)
             .setDesc(desc);
 
-        const patternContainer = containerEl.createDiv('pattern-container');
-        patternContainer.style.marginTop = '10px';
-        patternContainer.style.marginBottom = '20px';
+        const patternContainer = containerEl.createDiv({
+            cls: 'clean-files-pattern-container'
+        });
 
         // 正则表达式输入框
-        const inputDiv = patternContainer.createDiv('pattern-input');
-        inputDiv.style.marginBottom = '10px';
+        const inputDiv = patternContainer.createDiv({
+            cls: 'clean-files-pattern-input'
+        });
 
         const patternInput = inputDiv.createEl('input', {
             type: 'text',
             placeholder: this.i18nManager.t('settings.pattern_placeholder'),
             value: this.plugin.settings[settingKey] as string
         });
-        patternInput.style.width = '100%';
-        patternInput.style.padding = '8px 12px';
-        patternInput.style.border = '1px solid var(--background-modifier-border)';
-        patternInput.style.borderRadius = '4px';
-        patternInput.style.backgroundColor = 'var(--background-primary)';
-        patternInput.style.color = 'var(--text-normal)';
-        patternInput.style.fontSize = '14px';
 
         // 验证状态显示
-        const statusDiv = patternContainer.createDiv('pattern-status');
-        statusDiv.style.marginBottom = '10px';
-        statusDiv.style.fontSize = '12px';
-        statusDiv.style.minHeight = '16px';
+        const statusDiv = patternContainer.createDiv({
+            cls: 'clean-files-pattern-status'
+        });
 
         // 仅为保护文件模式显示示例
         if (settingKey === 'protectedPattern') {
             // 常用模式示例
-            const examplesDiv = patternContainer.createDiv('pattern-examples');
-            examplesDiv.style.marginTop = '10px';
+            const examplesDiv = patternContainer.createDiv({
+                cls: 'clean-files-pattern-examples'
+            });
 
             const examplesTitle = examplesDiv.createEl('div', {
-                text: this.i18nManager.t('settings.pattern_examples')
+                text: this.i18nManager.t('settings.pattern_examples'),
+                cls: 'clean-files-pattern-examples-title'
             });
-            examplesTitle.style.fontWeight = 'bold';
-            examplesTitle.style.marginBottom = '5px';
-            examplesTitle.style.fontSize = '12px';
-            examplesTitle.style.color = 'var(--text-muted)';
 
             const examples = [
                 { key: 'pattern_all_files', pattern: '.*' },
@@ -169,31 +160,16 @@ export class CleanFilesSettingTab extends PluginSettingTab {
                 { key: 'pattern_image_files', pattern: '\\.(jpg|jpeg|png|gif|bmp)$' },
                 { key: 'pattern_hidden_files', pattern: '^\\.' },
                 { key: 'pattern_obsidian_core', pattern: '\\.(md|canvas)$' },
-                { key: 'pattern_obsidian_config', pattern: '\\.obsidian/.*\\.json$' },
-                { key: 'pattern_obsidian_plugins', pattern: '\\.obsidian/plugins/.*\\.(js|css)$' },
-                { key: 'pattern_obsidian_themes', pattern: '\\.obsidian/themes/.*\\.css$' },
-                { key: 'pattern_obsidian_cache', pattern: '\\.obsidian/.*\\.cache$' }
+                // { key: 'pattern_obsidian_config', pattern: '\\.obsidian/.*\\.json$' },
+                // { key: 'pattern_obsidian_plugins', pattern: '\\.obsidian/plugins/.*\\.(js|css)$' },
+                // { key: 'pattern_obsidian_themes', pattern: '\\.obsidian/themes/.*\\.css$' },
+                // { key: 'pattern_obsidian_cache', pattern: '\\.obsidian/.*\\.cache$' }
             ];
 
             examples.forEach(example => {
-                const exampleDiv = examplesDiv.createDiv('pattern-example');
-                exampleDiv.style.display = 'flex';
-                exampleDiv.style.alignItems = 'center';
-                exampleDiv.style.marginBottom = '3px';
-                exampleDiv.style.fontSize = '11px';
-                exampleDiv.style.color = 'var(--text-muted)';
-                exampleDiv.style.cursor = 'pointer';
-                exampleDiv.style.padding = '2px 4px';
-                exampleDiv.style.borderRadius = '3px';
-
-                exampleDiv.textContent = this.i18nManager.t(`settings.${example.key}`);
-
-                exampleDiv.addEventListener('mouseenter', () => {
-                    exampleDiv.style.backgroundColor = 'var(--background-modifier-hover)';
-                });
-
-                exampleDiv.addEventListener('mouseleave', () => {
-                    exampleDiv.style.backgroundColor = 'transparent';
+                const exampleDiv = examplesDiv.createDiv({
+                    cls: 'clean-files-pattern-example',
+                    text: this.i18nManager.t(`settings.${example.key}`)
                 });
 
                 exampleDiv.addEventListener('click', () => {
@@ -217,14 +193,16 @@ export class CleanFilesSettingTab extends PluginSettingTab {
 
                 // 显示成功状态
                 statusDiv.textContent = '';
-                statusDiv.style.color = 'var(--text-success)';
-                patternInput.style.borderColor = 'var(--background-modifier-border)';
+                statusDiv.removeClass('error');
+                statusDiv.addClass('success');
+                patternInput.removeClass('error');
 
             } catch (error) {
                 // 显示错误状态
                 statusDiv.textContent = this.i18nManager.t('settings.pattern_invalid');
-                statusDiv.style.color = 'var(--text-error)';
-                patternInput.style.borderColor = 'var(--text-error)';
+                statusDiv.removeClass('success');
+                statusDiv.addClass('error');
+                patternInput.addClass('error');
             }
         };
 

@@ -62,10 +62,6 @@ Access plugin settings through Obsidian's Settings → Community Plugins → Vau
 
 The plugin includes built-in examples for common Obsidian file types:
 - Core files: `\\.md$|\\.canvas$`
-- Config files: `\\.obsidian/.*\\.json$`
-- Plugin files: `\\.obsidian/plugins/.*\\.(js|css)$`
-- Theme files: `\\.obsidian/themes/.*\\.css$`
-- Cache files: `\\.obsidian/.*\\.cache$`
 
 ## Safety Features
 

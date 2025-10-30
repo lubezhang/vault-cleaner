@@ -49,10 +49,6 @@
         "pattern_image_files": "图片文件: \\.(jpg|jpeg|png|gif|bmp)$",
         "pattern_hidden_files": "隐藏文件: ^\\.",
         "pattern_obsidian_core": "Obsidian核心文件: \\.(md|canvas)$",
-        "pattern_obsidian_config": "Obsidian配置文件: \\.obsidian/.*\\.json$",
-        "pattern_obsidian_plugins": "Obsidian插件文件: \\.obsidian/plugins/.*\\.(js|css)$",
-        "pattern_obsidian_themes": "Obsidian主题文件: \\.obsidian/themes/.*\\.css$",
-        "pattern_obsidian_cache": "Obsidian缓存文件: \\.obsidian/.*\\.cache$",
         "pattern_invalid": "正则表达式无效",
         "pattern_test": "测试模式"
     },
